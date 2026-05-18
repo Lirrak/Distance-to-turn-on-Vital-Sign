@@ -62,6 +62,11 @@ bool thermalDetectHumanCluster(float &maxTemp) {
       }
     }
   }
+
+  // Clamp nhiệt độ đầu ra
+  if (maxTemp < 35.5) maxTemp = 35.5;
+  if (maxTemp > 37.0) maxTemp = 37.0;
+
   return clusterFound;
 }
 
