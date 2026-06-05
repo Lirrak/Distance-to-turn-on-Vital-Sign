@@ -1,6 +1,5 @@
 #include <Arduino.h>
 #include "SharedVars.h"
-#include "Radar.h"
 #include "Vitals.h"
 #include "Thermal.h"
 #include "SerialAPI.h" // Gọi thư viện API qua Serial
@@ -11,7 +10,6 @@ void setup() {
   Serial.begin(115200); // Cổng Serial này vừa dùng để debug, vừa làm API
   while (!Serial) delay(10);
   
-  radarSetup();
   vitalsSetup();
   thermalSetupSensor();
 
@@ -28,8 +26,7 @@ void setup() {
 }
 
 void loop() {
-  radarHandleData();          
-  radarCheckTimeout();        
+        
   vitalsHandleData();         
   
   // Lắng nghe lệnh từ cổng USB liên tục

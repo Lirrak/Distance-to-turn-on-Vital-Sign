@@ -2,8 +2,8 @@
 #include "SharedVars.h"
 #include "DFRobot_HumanDetection.h"
 
-#define VITALS_RX_PIN 16
-#define VITALS_TX_PIN 17
+#define VITALS_RX_PIN 5
+#define VITALS_TX_PIN 4
 
 DFRobot_HumanDetection hu(&Serial2);
 

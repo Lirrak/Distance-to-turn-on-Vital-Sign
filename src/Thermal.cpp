@@ -19,7 +19,7 @@ const int zoneYStart = 9;
 const int zoneYEnd = 15;
 
 void thermalSetupSensor() {
-  Wire.begin(8, 9);
+  Wire.begin(17, 16);
   Wire.setClock(400000); 
   
   if (!mlx.begin(MLX90640_I2CADDR_DEFAULT, &Wire)) {
