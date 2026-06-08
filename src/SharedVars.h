@@ -3,15 +3,17 @@
 
 #include <Arduino.h>
 
-// --- Biến từ Radar ---
+// --- Biến từ radar / human detection sensor ---
 extern volatile float averageDistance;
 extern volatile bool isPresenceConfirmed;
 
-// --- Biến từ Cảm biến sinh tồn (Vitals) ---
+// --- Biến trạng thái cảm biến sinh hiệu ---
+extern volatile bool vitalsSensorReady;
 extern int averageHR;
 extern int averageBR;
 
-// --- Biến từ Camera nhiệt (Thermal) ---
+// --- Biến từ camera nhiệt ---
+extern volatile bool thermalSensorReady;
 extern volatile float sharedMaxTemp;
 extern volatile bool sharedPersonDetected;
 extern volatile bool thermalDataReady;

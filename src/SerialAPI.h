@@ -5,5 +5,6 @@
 
 void serialApiSetup();
 void serialApiHandle();
+void serialApiSendData();
 
 #endif

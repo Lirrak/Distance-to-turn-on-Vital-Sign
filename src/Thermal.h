@@ -3,8 +3,8 @@
 
 #include <Arduino.h>
 
-void thermalSetupSensor();
-void thermalTaskCode(void * pvParameters); 
+bool thermalSetupSensor();
+void thermalTaskCode(void *pvParameters);
 bool thermalDetectHumanCluster(float &maxTemp);
 
 #endif

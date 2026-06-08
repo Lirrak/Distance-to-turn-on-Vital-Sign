@@ -10,31 +10,68 @@ DFRobot_HumanDetection hu(&Serial2);
 const int numReadingsVitals = 5;
 int heartRates[numReadingsVitals] = {0};
 int breathRates[numReadingsVitals] = {0};
-int readIndexHR = 0, totalHR = 0;
-int readIndexBR = 0, totalBR = 0;
+int readIndexHR = 0;
+int readIndexBR = 0;
+int totalHR = 0;
+int totalBR = 0;
 
 unsigned long vitalsPreviousMillis = 0;
-const long vitalsInterval = 1000;
+const unsigned long vitalsInterval = 1000;
+
+void resetVitalsAverages() {
+  totalHR = 0;
+  totalBR = 0;
+  averageHR = 0;
+  averageBR = 0;
+
+  for (int i = 0; i < numReadingsVitals; i++) {
+    heartRates[i] = 0;
+    breathRates[i] = 0;
+  }
+}
 
 void vitalsSetup() {
   Serial2.begin(115200, SERIAL_8N1, VITALS_RX_PIN, VITALS_TX_PIN);
-  Serial.println("Initializing DFRobot Vitals Sensor...");
+
+  vitalsSensorReady = false;
+
   int retryCount = 0;
   while (hu.begin() != 0 && retryCount < 10) {
-    delay(1000);
+    delay(500);
     retryCount++;
-    Serial.print(".");
   }
-  if (retryCount >= 10) Serial.println("\nLoi: Khong tim thay cam bien Nhip Tim/Tho!");
-  else Serial.println("\nCam bien Nhip Tim/Tho da san sang.");
+
+  if (retryCount < 10) {
+    vitalsSensorReady = true;
+  } else {
+    vitalsSensorReady = false;
+    isPresenceConfirmed = false;
+    averageDistance = 0.0f;
+    resetVitalsAverages();
+  }
 }
 
 void vitalsHandleData() {
+  if (!vitalsSensorReady) {
+    return;
+  }
+
   unsigned long currentMillis = millis();
-  if (currentMillis - vitalsPreviousMillis < vitalsInterval) return;
+  if (currentMillis - vitalsPreviousMillis < vitalsInterval) {
+    return;
+  }
   vitalsPreviousMillis = currentMillis;
 
-  if (hu.smHumanData(hu.eHumanPresence) == 1) {
+  uint16_t presence = hu.smHumanData(hu.eHumanPresence);
+  isPresenceConfirmed = (presence == 1);
+
+  if (isPresenceConfirmed) {
+    uint16_t currentDistance = hu.smHumanData(hu.eHumanDistance);
+    if (currentDistance > 0 && currentDistance < 10000) {
+      // Giữ tên biến cm theo code gốc. Bạn nên kiểm chứng lại đơn vị thực tế của sensor.
+      averageDistance = (float)currentDistance;
+    }
+
     int currentHR = hu.getHeartRate();
     int currentBR = hu.getBreatheValue();
 
@@ -54,10 +91,7 @@ void vitalsHandleData() {
       averageBR = totalBR / numReadingsVitals;
     }
   } else {
-    totalHR = 0; totalBR = 0;
-    averageHR = 0; averageBR = 0;
-    for (int i = 0; i < numReadingsVitals; i++) {
-      heartRates[i] = 0; breathRates[i] = 0;
-    }
+    averageDistance = 0.0f;
+    resetVitalsAverages();
   }
 }

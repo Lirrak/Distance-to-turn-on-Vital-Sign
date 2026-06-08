@@ -2,32 +2,63 @@
 #include "SharedVars.h"
 
 void serialApiSetup() {
-  // Cổng Serial đã được khởi tạo ở main.ino với tốc độ 115200
-  // Chỉ in ra dòng thông báo để biết hệ thống đã sẵn sàng
-  Serial.println("=> [SERIAL API] Da san sang. Gui lenh 'GET_DATA' de lay JSON.");
+  // Không in debug text ra Serial ở đây vì Serial đang được dùng làm API cho IQ9.
+  // Giảm timeout để readStringUntil('\n') không block loop quá lâu nếu gói lệnh bị thiếu newline.
+  Serial.setTimeout(50);
+}
+
+void serialApiSendData() {
+  // JSON sạch: mỗi response là đúng 1 dòng và kết thúc bằng '\n'.
+  // Python/IQ9 có thể đọc bằng readline() và json.loads().
+  Serial.print("{");
+
+  Serial.print("\"type\":\"sensor_data\",");
+
+  Serial.print("\"radar_distance_cm\":");
+  Serial.print(averageDistance, 1);
+  Serial.print(",");
+
+  Serial.print("\"radar_presence\":");
+  Serial.print(isPresenceConfirmed ? "true" : "false");
+  Serial.print(",");
+
+  Serial.print("\"vitals_sensor_ready\":");
+  Serial.print(vitalsSensorReady ? "true" : "false");
+  Serial.print(",");
+
+  Serial.print("\"vitals_heart_rate\":");
+  Serial.print(averageHR);
+  Serial.print(",");
+
+  Serial.print("\"vitals_breath_rate\":");
+  Serial.print(averageBR);
+  Serial.print(",");
+
+  Serial.print("\"thermal_sensor_ready\":");
+  Serial.print(thermalSensorReady ? "true" : "false");
+  Serial.print(",");
+
+  Serial.print("\"thermal_max_temp\":");
+  Serial.print(sharedMaxTemp, 2);
+  Serial.print(",");
+
+  Serial.print("\"thermal_person_detected\":");
+  Serial.print(sharedPersonDetected ? "true" : "false");
+  Serial.print(",");
+
+  Serial.print("\"uptime_ms\":");
+  Serial.print(millis());
+
+  Serial.println("}");
 }
 
 void serialApiHandle() {
-  // Kiểm tra xem có dữ liệu gửi từ máy tính xuống không
-  if (Serial.available() > 0) {
-    // Đọc dữ liệu cho đến khi gặp ký tự xuống dòng (Enter)
+  while (Serial.available() > 0) {
     String command = Serial.readStringUntil('\n');
-    command.trim(); // Xóa các khoảng trắng hoặc ký tự thừa (\r)
+    command.trim();
 
-    // Nếu lệnh khớp với "GET_DATA"
     if (command == "GET_DATA") {
-      // Đóng gói dữ liệu thành chuẩn JSON
-      String json = "{";
-      json += "\"radar_distance_cm\":" + String(averageDistance, 1) + ",";
-      json += "\"radar_presence\":" + String(isPresenceConfirmed ? "true" : "false") + ",";
-      json += "\"vitals_heart_rate\":" + String(averageHR) + ",";
-      json += "\"vitals_breath_rate\":" + String(averageBR) + ",";
-      json += "\"thermal_max_temp\":" + String(sharedMaxTemp, 2) + ",";
-      json += "\"thermal_person_detected\":" + String(sharedPersonDetected ? "true" : "false");
-      json += "}";
-
-      // In chuỗi JSON lên Serial để máy tính/phần mềm khác đọc được
-      Serial.println(json);
+      serialApiSendData();
     }
   }
 }
