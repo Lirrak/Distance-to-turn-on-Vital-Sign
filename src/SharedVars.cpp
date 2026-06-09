@@ -12,3 +12,4 @@ volatile bool thermalSensorReady = false;
 volatile float sharedMaxTemp = -100.0f;
 volatile bool sharedPersonDetected = false;
 volatile bool thermalDataReady = false;
+volatile bool thermalTempValid = false;

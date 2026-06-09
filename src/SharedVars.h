@@ -17,5 +17,6 @@ extern volatile bool thermalSensorReady;
 extern volatile float sharedMaxTemp;
 extern volatile bool sharedPersonDetected;
 extern volatile bool thermalDataReady;
+extern volatile bool thermalTempValid;
 
 #endif

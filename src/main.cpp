@@ -43,9 +43,5 @@ void loop() {
   // Gọi thêm một lần sau khi đọc sensor để nếu IQ9 vừa gửi lệnh thì có phản hồi ngay.
   serialApiHandle();
 
-  if (thermalDataReady) {
-    thermalDataReady = false;
-  }
-
   delay(2);
 }

@@ -38,8 +38,16 @@ void serialApiSendData() {
   Serial.print(thermalSensorReady ? "true" : "false");
   Serial.print(",");
 
+  Serial.print("\"thermal_data_valid\":");
+  Serial.print(thermalTempValid ? "true" : "false");
+  Serial.print(",");
+
   Serial.print("\"thermal_max_temp\":");
-  Serial.print(sharedMaxTemp, 2);
+  if (thermalTempValid) {
+    Serial.print(sharedMaxTemp, 2);
+  } else {
+    Serial.print("null");
+  }
   Serial.print(",");
 
   Serial.print("\"thermal_person_detected\":");

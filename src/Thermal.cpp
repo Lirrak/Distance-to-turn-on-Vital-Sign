@@ -27,6 +27,7 @@ bool thermalSetupSensor() {
     sharedMaxTemp = -100.0f;
     sharedPersonDetected = false;
     thermalDataReady = false;
+    thermalTempValid = false;
     return false;
   }
 
@@ -45,6 +46,7 @@ bool thermalSetupSensor() {
     sharedMaxTemp = -100.0f;
     sharedPersonDetected = false;
     thermalDataReady = false;
+    thermalTempValid = false;
     return false;
   }
 
@@ -119,10 +121,16 @@ void thermalTaskCode(void *pvParameters) {
         sharedMaxTemp = tempMax;
         sharedPersonDetected = detected;
         thermalDataReady = true;
+        thermalTempValid = true;
+      } else {
+        sharedPersonDetected = false;
+        thermalDataReady = false;
+        thermalTempValid = false;
       }
     } else {
       sharedPersonDetected = false;
       thermalDataReady = false;
+      thermalTempValid = false;
     }
 
     // MLX90640 đang đặt 8Hz, delay ~125ms là hợp lý và tránh task chạy kín CPU.
